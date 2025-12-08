@@ -1,0 +1,101 @@
+function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
+% boost     -> boost converter system parameters
+% op        -> steaday state operating point parameters
+
+    arguments
+        boost struct
+        op struct
+    end
+
+    unpackStruct(boost);
+    unpackStruct(op);
+
+    % Im:
+    k1 = 1/T*(Ubat0)/(Upv0+m0*L);
+    k2 = -1/T*(Ubat0)/(Upv0+m0*L);
+    k3 = 1/L-1/T*(Ubat0)/((Upv0+m0*L)^2)*(Ir0-Im0);
+    k4 = 1/T*(Ir0-Im0)/(Upv0+m0*L)-1/L;
+    % ID1:
+    k5 = 1-L/T*(2*(Ir0-Im0))/(Upv0+m0*L)+(Ubat0-Upv0-m0*L)/(Upv0+m0*L)-L/T*(Ubat0-Upv0-2*m0*L)/((Upv0+m0*L)^2)*(Ir0-Im0);
+    k6 = L/T*Ir0/(Upv0+m0*L)-(Ubat0-Upv0-m0*L)/(Upv0+m0*L)+L/T*(Ubat0-Upv0-2*m0*L)/((Upv0+m0*L)^2)*(Ir0-Im0);
+    k7 = T/(2*L)+(Ir0-Im0)/((Upv0+m0*L)^2)*(L/T*Ir0-Ubat0)+L/(2*T)*((Ir0-Im0)^2)*(2*Ubat0-Upv0-3*m0*L)/((Upv0+m0*L)^3);
+    k8 = -T/(2*L)+(Ir0-Im0)/(Upv0+m0*L)-L/(2*T)*((Ir0-Im0)^2)/((Upv0+m0*L)^2);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  with Cbat  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    k9 = Cbat*Ci*Rt*Ru;
+    k10 = Cbat*Ru+Ci*Rt+Cbat*Rt-Cbat*Rt*Ru*k8-Cbat*Ci*Rt*Ru*k2;
+    k11 = Cbat*Rt*Ru*k2*k8-Cbat*Rt*Ru*k4*k6-Ci*Rt*k2-Cbat*Ru*k2-Cbat*Rt*k2-Rt*k8+1;
+    k12 = Rt*k2*k8-Rt*k4*k6-k2;
+    % Ir numerator:
+    k13 = Cbat*Rt*Ru*k5;
+    k14 = Cbat*Rt*Ru*k1*k6-Cbat*Rt*Ru*k2*k5+Rt*k5;
+    k15 = Rt*k1*k6-Rt*k2*k5;
+    % Upv numerator:
+    k16 = Cbat*Rt*Ru*k7;
+    k17 = Cbat*Rt*Ru*k3*k6-Cbat*Rt*Ru*k2*k7+Rt*k7;
+    k18 = Rt*k3*k6-Rt*k2*k7;
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  with Cbat  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cbat -> inf %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    k19 = Ci*Rt*Ru;
+    k20 = Ru+Rt-Ci*Rt*Ru*k2-Rt*Ru*k8;
+    k21 = Rt*Ru*k2*k8-Rt*Ru*k4*k6-Rt*k2-Ru*k2;
+    % Ir:
+    k22 = Rt*Ru*k5;
+    k23 = Rt*Ru*k1*k6-Rt*Ru*k2*k5;
+    % Upv:
+    k24 = Rt*Ru*k7;
+    k25 = Rt*Ru*k3*k6-R
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cbat -> inf %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    % System characteristics:
+    Tn = sqrt(k27/k29);
+    zeta = 1/2*k28/(sqrt(k29*k27));
+    Tz1 = -k30/k31;
+    Tz2 = k32/k33;
+    K1 = k31/k29;
+    K2 = k33/k29;
+    Tp1 = Tn/(zeta-sqrt(zeta^2-1));
+    Tp2 = Tn/(zeta+sqrt(zeta^2-1));
+
+    % system tf with finite Cbat:
+    G_Ubat_Ir_full = tf([k13, k14, k15], [k9, k10, k11, k12]);
+    G_Ubat_Upv_full = tf([k16, k17, k18], [k9, k10, k11, k12]);
+
+    % system tf's with infinite Cbat:
+    % 2. order:
+    G_Ubat_Ir = tf([-K1*Tz1, K1], [(Tp1*Tp2), (Tp1+Tp2), 1]);
+    G_Ubat_Upv = tf([K2*Tz2, K2], [(Tp1*Tp2), (Tp1+Tp2), 1]);
+    % without a zero:
+    G_Ubat_Ir_nozero = tf(K1, [(Tp1*Tp2), (Tp1+Tp2), 1]);
+    G_Ubat_Upv_nozero = tf(K2, [(Tp1*Tp2), (Tp1+Tp2), 1]);
+    % 1. order without a zero:
+    G_Ubat_Ir_red = tf(K1, [Tp1, 1]);
+    G_Ubat_Upv_red = tf(K2, [Tp1, 1]);
+
+    % input capacitor tf:
+    G_Upv_IL = tf(-1, [Cu, Ipv0/Upv0]);
+
+    ccm_m_separate_tfs.G_Ubat_Ir_full = G_Ubat_Ir_full;
+    ccm_m_separate_tfs.G_Ubat_Upv_full = G_Ubat_Upv_full;
+
+    ccm_m_separate_tfs.G_Ubat_Ir = G_Ubat_Ir;
+    ccm_m_separate_tfs.G_Ubat_Upv = G_Ubat_Upv;
+    ccm_m_separate_tfs.G_Ubat_Ir_nozero = G_Ubat_Ir_nozero;
+    ccm_m_separate_tfs.G_Ubat_Upv_nozero = G_Ubat_Upv_nozero;
+    ccm_m_separate_tfs.G_Ubat_Ir_red = G_Ubat_Ir_red;
+    ccm_m_separate_tfs.G_Ubat_Upv_red = G_Ubat_Upv_red;
+    
+    ccm_m_separate_tfs.G_Upv_IL = G_Upv_IL;
+
+    ccm_m_sys.G_PT1 = G_Ubat_Ir_red + ro*G_Upv_IL*G_Ubat_Upv_red;
+
+    ccm_m_sys.Tn = Tn;
+    ccm_m_sys.zeta = zeta;
+    ccm_m_sys.Tz1 = Tz1;
+    ccm_m_sys.Tz2 = Tz2;
+    ccm_m_sys.K1 = K1;
+    ccm_m_sys.K2 = K2;
+    ccm_m_sys.Tp1 = Tp1;
+    ccm_m_sys.Tp2 = Tp2;
+end
