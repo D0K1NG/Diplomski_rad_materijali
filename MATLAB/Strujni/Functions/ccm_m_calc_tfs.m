@@ -67,8 +67,8 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
     G_Ubat_Ir = tf([-K1*Tz1, K1], [(Tp1*Tp2), (Tp1+Tp2), 1]);
     G_Ubat_Upv = tf([-K2*Tz2, K2], [(Tp1*Tp2), (Tp1+Tp2), 1]);
     % without a zero:
-    G_Ubat_Ir_nozero = tf(K1, [(Tp1*Tp2), (Tp1+Tp2), 1]);
-    G_Ubat_Upv_nozero = tf(K2, [(Tp1*Tp2), (Tp1+Tp2), 1]);
+    % G_Ubat_Ir_nozero = tf(K1, [(Tp1*Tp2), (Tp1+Tp2), 1]);
+    % G_Ubat_Upv_nozero = tf(K2, [(Tp1*Tp2), (Tp1+Tp2), 1]);
     % 1. order without a zero:
     G_Ubat_Ir_red = tf(K1, [Tp1, 1]);
     G_Ubat_Upv_red = tf(K2, [Tp1, 1]);
@@ -81,8 +81,8 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
 
     ccm_m_separate_tfs.G_Ubat_Ir = G_Ubat_Ir;
     ccm_m_separate_tfs.G_Ubat_Upv = G_Ubat_Upv;
-    ccm_m_separate_tfs.G_Ubat_Ir_nozero = G_Ubat_Ir_nozero;
-    ccm_m_separate_tfs.G_Ubat_Upv_nozero = G_Ubat_Upv_nozero;
+    % ccm_m_separate_tfs.G_Ubat_Ir_nozero = G_Ubat_Ir_nozero;
+    % ccm_m_separate_tfs.G_Ubat_Upv_nozero = G_Ubat_Upv_nozero;
     ccm_m_separate_tfs.G_Ubat_Ir_red = G_Ubat_Ir_red;
     ccm_m_separate_tfs.G_Ubat_Upv_red = G_Ubat_Upv_red;
     
