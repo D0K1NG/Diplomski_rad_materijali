@@ -50,7 +50,7 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
 
     % System characteristics:
     Tn = sqrt(k19/k21);
-    zeta = 1/2*k20/(sqrt(k19*k21));
+    zeta = 1/2*(k20/(sqrt(k19*k21)));
     Tz1 = -k22/k23;
     Tz2 = -k24/k25;
     K1 = k23/k21;
