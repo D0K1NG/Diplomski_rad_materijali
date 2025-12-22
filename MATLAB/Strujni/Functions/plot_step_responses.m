@@ -31,12 +31,22 @@ function plot_step_responses(tf_struct, plot_data)
         error("Not enough colors for all transfer functions!");
     end
     
+    % --- Handle line styles ---
+    if ~exist('linestyles','var') || isempty(linestyles)
+        linestyles = repmat({'-'},1,n);   % default solid lines
+    elseif numel(linestyles) < n
+        error("Not enough line styles for all transfer functions!");
+    end
+
     figure();
     hold on;
 
     for i = 1:n
         response = step(tf_struct.(G{i}), t);
-        plot(t, response, 'LineWidth', 1.5, 'Color', colors(i, :));
+        plot(t, response, ...
+            'LineWidth', 1.5, ...
+            'Color', colors(i,:), ...
+            'LineStyle', linestyles{i});
     end
 
     ax = gca;

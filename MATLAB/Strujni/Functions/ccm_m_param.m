@@ -19,14 +19,9 @@ function ccm_m = ccm_m_param(boost, Bat, pv_data)
     Ir0 = Ipv0;
     Im0 = Ir0-T/L*(Upv0+m0*L)/Ubat0*(Ubat0-Upv0);
     Lmin = T*(Upv0+m0*L)/(Ir0*Ubat0)*(Ubat0-Upv0);
-    % ro = 1/2*(1+L/T*(Im0-m0*L)/(Upv0+m0*L))+1/2*((-1/T*L/(Upv0+m0*L))*(Ir0-T/L*(Ubat0-Upv0)+(Ir0-Im0)/(Upv0+m0*L)*(Ubat0-Upv0-m0*L)))+1/2*Ubat0/(Upv0+m0*L)*(1-L/T*(Ir0-Im0)/(Upv0+m0*L));
     ro = 1/2*(1+L/T*(Im0-m0*L)/(Upv0+m0*L))+1/2*(-1/T*L/(Upv0+m0*L)*(Ir0-T/L*(Ubat0-Upv0)+(Ir0-Im0)/(Upv0+m0*L)*(Ubat0-Upv0-m0*L)))+1/2*Ubat0/(Upv0+m0*L)*(1-L/T*(Ir0-Im0)/(Upv0+m0*L));
     L_lim = -(T*Ubat0*Upv0)/(Im0*Ubat0 - Ir0*Ubat0 + Im0*Upv0 - Ir0*Upv0 + T*Ubat0*m0);
-    
-    ro2 = (Im0*L)/(2*T*(Upv0 + L*m0)) - (L*m0)/(2*(Upv0 + L*m0)) - (L*(Ir0 + ((Im0 - Ir0)*(Upv0 - Ubat0 + L*m0))/(Upv0 + L*m0) - (T*(Ubat0 - Upv0))/L))/(2*T*(Upv0 + L*m0)) - ((L*(Im0 - Ir0))/(2*T*(Upv0 + L*m0)) + 1/2)*((Upv0 - Ubat0 + L*m0)/(Upv0 + L*m0) - 1) + 1/2;
-    iL = ((T*((L*(Im0 - Ir0))/(T*(Upv0 + L*m0)) + 1)*((T*(Ubat0 - Upv0))/L - ((Im0 - Ir0)*(Upv0 - Ubat0 + L*m0))/(Upv0 + L*m0) + (L*m0*(Im0 - Ir0))/(Upv0 + L*m0)))/2 + T*((L*(Im0 - Ir0))/(T*(Upv0 + L*m0)) + 1)*(Ir0 + ((Im0 - Ir0)*(Upv0 - Ubat0 + L*m0))/(Upv0 + L*m0) - (T*(Ubat0 - Upv0))/L) - (L*(Im0 - Ir0)*(Ir0 - Im0 + (L*m0*(Im0 - Ir0))/(Upv0 + L*m0)))/(2*(Upv0 + L*m0)) - (Im0*L*(Im0 - Ir0))/(Upv0 + L*m0))/T;
-    iL2 = 1/2*L/T*(Ir0-Im0)/(Upv0+m0*L)*Im0+1/2*Ir0-1/2*m0*L*(Ir0-Im0)/(Upv0+m0*L)+1/2*(1-L/T*(Ir0-Im0)/(Upv0+m0*L))*(Ir0-T/L*(Ubat0-Upv0)+(Ir0-Im0)/(Upv0+m0*L)*(Ubat0-Upv0-m0*L));
-
+  
     ccm_m.Ipv0 = Ipv0;
     ccm_m.Upv0 = Upv0;
     ccm_m.Ubat0 = Ubat0;
@@ -36,9 +31,4 @@ function ccm_m = ccm_m_param(boost, Bat, pv_data)
     ccm_m.Lmin = Lmin;
     ccm_m.ro = ro;
     ccm_m.L_lim = L_lim;
-
-    ccm_m.ro2 = ro2;
-    ccm_m.iL = iL;
-    ccm_m.iL2 = iL2;
-   
 end

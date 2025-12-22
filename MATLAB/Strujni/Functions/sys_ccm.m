@@ -10,9 +10,14 @@ function [sys_tf_ccm, sys_ccm] = sys_ccm(ccm_m_sys, ccm_m_op, boost)
     unpackStruct(ccm_m_op);
     unpackStruct(boost);
 
-    Tp2 = Cu*Upv0/Ipv0;
-    K = K1-ro*K2*Upv0/Ipv0;
-    Tz = (K1*Tp2)/(K1-ro*K2*Upv0/Ipv0);
+    % Input transfer function:
+    Tu = Cu*Upv0/Ipv0;
+    Ku = -Upv0/Ipv0;
+
+    Tp1 = Tp1;
+    Tp2 = Tu;
+    K = K1+ro*Ku*K2;
+    Tz = (K1*(Tu+Tz1)+ro*Ku*K2*Tz2)/(K1+ro*Ku*K2);
 
     sys_tf_ccm = tf([K*Tz, K], [Tp1*Tp2, (Tp1+Tp2), 1]);
 

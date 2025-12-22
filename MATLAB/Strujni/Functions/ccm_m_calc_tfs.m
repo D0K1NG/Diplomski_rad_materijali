@@ -51,8 +51,8 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
     % System characteristics:
     Tn = sqrt(k19/k21);
     zeta = 1/2*(k20/(sqrt(k19*k21)));
-    Tz1 = -k22/k23;
-    Tz2 = -k24/k25;
+    Tz1 = k22/k23;
+    Tz2 = k24/k25;
     K1 = k23/k21;
     K2 = k25/k21;
     Tp1 = Tn/(zeta-sqrt(zeta^2-1));
@@ -64,14 +64,11 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
 
     % system tf's with infinite Cbat:
     % 2. order:
-    G_Ubat_Ir = tf([-K1*Tz1, K1], [(Tp1*Tp2), (Tp1+Tp2), 1]);
-    G_Ubat_Upv = tf([-K2*Tz2, K2], [(Tp1*Tp2), (Tp1+Tp2), 1]);
-    % without a zero:
-    % G_Ubat_Ir_nozero = tf(K1, [(Tp1*Tp2), (Tp1+Tp2), 1]);
-    % G_Ubat_Upv_nozero = tf(K2, [(Tp1*Tp2), (Tp1+Tp2), 1]);
-    % 1. order without a zero:
-    G_Ubat_Ir_red = tf(K1, [Tp1, 1]);
-    G_Ubat_Upv_red = tf(K2, [Tp1, 1]);
+    G_Ubat_Ir = tf([K1*Tz1, K1], [(Tp1*Tp2), (Tp1+Tp2), 1]);
+    G_Ubat_Upv = tf([K2*Tz2, K2], [(Tp1*Tp2), (Tp1+Tp2), 1]);
+    % 1. order with zero:
+    G_Ubat_Ir_red = tf([K1*Tz1, K1], [Tp1, 1]);
+    G_Ubat_Upv_red = tf([K2*Tz2, K2], [Tp1, 1]);
 
     % input capacitor tf:
     G_Upv_IL = tf(-1, [Cu, Ipv0/Upv0]);
@@ -81,14 +78,12 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
 
     ccm_m_separate_tfs.G_Ubat_Ir = G_Ubat_Ir;
     ccm_m_separate_tfs.G_Ubat_Upv = G_Ubat_Upv;
-    % ccm_m_separate_tfs.G_Ubat_Ir_nozero = G_Ubat_Ir_nozero;
-    % ccm_m_separate_tfs.G_Ubat_Upv_nozero = G_Ubat_Upv_nozero;
+
     ccm_m_separate_tfs.G_Ubat_Ir_red = G_Ubat_Ir_red;
     ccm_m_separate_tfs.G_Ubat_Upv_red = G_Ubat_Upv_red;
     
-    ccm_m_separate_tfs.G_Upv_IL = G_Upv_IL;
-
-    ccm_m_sys.G_PT1 = G_Ubat_Ir_red + ro*G_Upv_IL*G_Ubat_Upv_red;
+   % Full system transfer function:
+    ccm_m_sys.sys = G_Ubat_Ir_red + ro * G_Upv_IL * G_Ubat_Upv_red;
 
     ccm_m_sys.Tn = Tn;
     ccm_m_sys.zeta = zeta;
