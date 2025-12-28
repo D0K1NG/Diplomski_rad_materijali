@@ -13,11 +13,11 @@ function dcm = dcm_param(boost, Bat, pv_data)
     
     Ipv0 = Impp;
     Upv0 = Vmpp;
-    Ubat0 = Ubat_nom;
-    Upvmin = Ubat_charged - 0.7*Ubat_charged;
+    Ubat0 = Ubat_charged;
+    Upvmin = 0.3*Upv0;
     m0 = (Ubat_charged-2*Upvmin)/(2*L);
     Ir0 = Ipv0;
-    ro = L/T*(Ubat0*Upv0)/(Ubat0-Upv0)*(Ir0)/(Upv0-m0*L)^2;
+    ro = L/T*(Ubat0*Upv0*Ir0)/((Ubat0-Upv0)*(Upv0+m0*L)^2);
     
     dcm.Ipv0 = Ipv0;
     dcm.Upv0 = Upv0;

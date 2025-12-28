@@ -17,7 +17,7 @@ function [sys_tf_ccm, sys_ccm] = sys_ccm(ccm_m_sys, ccm_m_op, boost)
     Tp1 = Tp1;
     Tp2 = Tu;
     K = K1+ro*Ku*K2;
-    Tz = (K1*(Tu+Tz1)+ro*Ku*K2*Tz2)/(K1+ro*Ku*K2);
+    Tz = (K1*(Tu+Tz1)+ro*Ku*K2*Tz2)/(K);
 
     sys_tf_ccm = tf([K*Tz, K], [Tp1*Tp2, (Tp1+Tp2), 1]);
 
