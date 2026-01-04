@@ -71,6 +71,7 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
     G_Ubat_Upv_red = tf([K2*Tz2, K2], [Tp1, 1]);
 
     % input capacitor tf:
+    
     G_Upv_IL = tf(-1, [Cu, Ipv0/Upv0]);
 
     ccm_m_separate_tfs.G_Ubat_Ir_full = G_Ubat_Ir_full;
@@ -93,4 +94,5 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
     ccm_m_sys.K2 = K2;
     ccm_m_sys.Tp1 = Tp1;
     ccm_m_sys.Tp2 = Tp2;
+    ccm_m_sys.Tp3 = Cu*Upv0/Ipv0;
 end

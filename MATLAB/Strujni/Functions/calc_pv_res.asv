@@ -36,7 +36,6 @@ function pv = calc_pv_res(model, params)
     pv.Umpp = Umax;
     pv.Impp = Imax;
 
-    pv.Isc = Ipv(1);
-    pv.Uoc = Upv(end);
+    pv.Isc = 
 end
 
