@@ -1,26 +1,33 @@
-function ccm_m = ccm_m_param(boost, Bat, pv_data)
+function ccm_m = ccm_m_param(boost, Bat, pv, Ir0)
 % calculate steady state param. for CCM mode with compensation ramp
 
     arguments
         boost struct
         Bat struct
-        pv_data struct
+        pv struct
+        Ir0 (1,1) double
     end
 
     unpackStruct(boost);
     unpackStruct(Bat);
-    unpackStruct(pv_data);
     
-    Ipv0 = Impp;
-    Upv0 = Vmpp;
-    Ubat0 = Ubat_nom;
-    Upvmin = 0.3*Upv0;
-    m0 = (Ubat_charged-2*Upvmin)/(2*L);
-    Ir0 = Ipv0;
+    Ipv0 = Ir0;
+    Upv0 = interp1(pv.Ipv, pv.Upv, Ipv0, 'linear', 'extrap');
+    Ubat0 = Bat.Ubat_charged;
+
+    % Upvmin = 0.5*pv_sim.Uoc;
+    Upvmin = Upv0;
+    m0 = (Ubat0 - 2*Upvmin)/(2*L);
+
     Im0 = Ir0-T/L*(Upv0+m0*L)/Ubat0*(Ubat0-Upv0);
     Lmin = T*(Upv0+m0*L)/(Ir0*Ubat0)*(Ubat0-Upv0);
     ro = 1/2*(1+L/T*(Im0-m0*L)/(Upv0+m0*L))+1/2*(-1/T*L/(Upv0+m0*L)*(Ir0-T/L*(Ubat0-Upv0)+(Ir0-Im0)/(Upv0+m0*L)*(Ubat0-Upv0-m0*L)))+1/2*Ubat0/(Upv0+m0*L)*(1-L/T*(Ir0-Im0)/(Upv0+m0*L));
     L_lim = -(T*Ubat0*Upv0)/(Im0*Ubat0 - Ir0*Ubat0 + Im0*Upv0 - Ir0*Upv0 + T*Ubat0*m0);
+    D0 = L/T*(Ir0-Im0)/(Upv0+m0*L);
+
+    % Incremental conductance at CV operating point:
+    idx = find(pv.Upv >= Upv0, 1);
+    G_incr_pv = (pv.Ipv(idx+1) - pv.Ipv(idx-1)) / (pv.Upv(idx+1) - pv.Upv(idx-1));
   
     ccm_m.Ipv0 = Ipv0;
     ccm_m.Upv0 = Upv0;
@@ -31,4 +38,6 @@ function ccm_m = ccm_m_param(boost, Bat, pv_data)
     ccm_m.Lmin = Lmin;
     ccm_m.ro = ro;
     ccm_m.L_lim = L_lim;
+    ccm_m.G_incr_pv = G_incr_pv;
+    ccm_m.D0 = D0;
 end

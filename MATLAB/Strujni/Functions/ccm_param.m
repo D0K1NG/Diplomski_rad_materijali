@@ -12,7 +12,7 @@ function ccm = ccm_param(boost, Bat, pv_data)
     unpackStruct(pv_data);
     
     Ipv0 = Impp;
-    Upv0 = Vmpp;
+    Upv0 = Umpp;
     Ubat0 = Ubat_nom;
     Ir0 = Ipv0;
     Im0 = Ir0-(T*Upv0)/(L*Ubat0)*(Ubat0 - Upv0);

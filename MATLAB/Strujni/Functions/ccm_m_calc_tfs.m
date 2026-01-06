@@ -67,8 +67,8 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
     G_Ubat_Ir = tf([K1*Tz1, K1], [(Tp1*Tp2), (Tp1+Tp2), 1]);
     G_Ubat_Upv = tf([K2*Tz2, K2], [(Tp1*Tp2), (Tp1+Tp2), 1]);
     % 1. order with zero:
-    G_Ubat_Ir_red = tf([K1*Tz1, K1], [Tp1, 1]);
-    G_Ubat_Upv_red = tf([K2*Tz2, K2], [Tp1, 1]);
+    G_Ubat_Ir_red = tf(K1, [Tp1, 1]);
+    G_Ubat_Upv_red = tf(K2, [Tp1, 1]);
 
     % input capacitor tf:
     
@@ -82,6 +82,8 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
 
     ccm_m_separate_tfs.G_Ubat_Ir_red = G_Ubat_Ir_red;
     ccm_m_separate_tfs.G_Ubat_Upv_red = G_Ubat_Upv_red;
+
+    ccm_m_separate_tfs.G_Upv_IL = G_Upv_IL;
     
    % Full system transfer function:
     ccm_m_sys.sys = G_Ubat_Ir_red + ro * G_Upv_IL * G_Ubat_Upv_red;
@@ -94,5 +96,4 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
     ccm_m_sys.K2 = K2;
     ccm_m_sys.Tp1 = Tp1;
     ccm_m_sys.Tp2 = Tp2;
-    ccm_m_sys.Tp3 = Cu*Upv0/Ipv0;
 end
