@@ -46,18 +46,18 @@ function draw_bode(tf, w)
     semilogx(w, mag_dB, '-k','LineWidth', 1.5);
     hold on
     
-    target = 2000*2*pi;
-    tol = 1e-6 * target;   % relative tolerance
+    % target = 2000*2*pi;
+    % tol = 1e-6 * target;   % relative tolerance
 
     % Mark poles on magnitude plot:
     for i = 1:length(p_sorted)
-        if abs(p_sorted(i) - target) < tol
-            lbl = sprintf('w_{filter}');
-            xline(p_sorted(i), '--k', lbl, ...
-                'LabelOrientation','horizontal', ...
-                'LabelHorizontalAlignment', 'right', ...
-                'LineWidth', 1.2);
-        elseif p_sorted(i) > 0
+        % if abs(p_sorted(i) - target) < tol
+        %     lbl = sprintf('w_{filter}');
+        %     xline(p_sorted(i), '--k', lbl, ...
+        %         'LabelOrientation','horizontal', ...
+        %         'LabelHorizontalAlignment', 'right', ...
+        %         'LineWidth', 1.2);
+        if p_sorted(i) > 0
             lbl = sprintf('wp_%d', i);
             xline(p_sorted(i), '--k', lbl, ...
                 'LabelOrientation','horizontal', ...
