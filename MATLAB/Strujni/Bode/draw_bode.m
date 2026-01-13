@@ -49,31 +49,27 @@ function draw_bode(tf, w)
     % target = 2000*2*pi;
     % tol = 1e-6 * target;   % relative tolerance
 
+    k = 0;
     % Mark poles on magnitude plot:
     for i = 1:length(p_sorted)
-        % if abs(p_sorted(i) - target) < tol
-        %     lbl = sprintf('w_{filter}');
-        %     xline(p_sorted(i), '--k', lbl, ...
-        %         'LabelOrientation','horizontal', ...
-        %         'LabelHorizontalAlignment', 'right', ...
-        %         'LineWidth', 1.2);
         if p_sorted(i) > 0
-            lbl = sprintf('wp_%d', i);
-            xline(p_sorted(i), '--k', lbl, ...
+            k = k + 1;
+            xline(p_sorted(i),'--k',sprintf('wp_%d',k), ...
                 'LabelOrientation','horizontal', ...
-                'LabelHorizontalAlignment', 'right', ...
-                'LineWidth', 1.2);
+                'LabelHorizontalAlignment','right', ...
+                'LineWidth',1.2);
         end
     end
-    
+
+    k = 0;
     % Mark zeros on magnitude plot:
     for i = 1:length(z_sorted)
         if z_sorted(i) > 0
-            lbl = sprintf('wz_%d', i);
-            xline(z_sorted(i), '--k', lbl, ...
+            k = k + 1;
+            xline(z_sorted(i),'--k',sprintf('wz_%d',k), ...
                 'LabelOrientation','horizontal', ...
-                'LabelHorizontalAlignment', 'left', ...
-                'LineWidth', 1.2);
+                'LabelHorizontalAlignment','right', ...
+                'LineWidth',1.2);
         end
     end
     
@@ -81,26 +77,26 @@ function draw_bode(tf, w)
     ylabel('Magnitude (dB)');
     set(gca, 'FontSize', 11);
 
-    ax = gca;
-    
-    % ---- 1. Set numeric ticks FIRST ----
-    z_sorted = round(z_sorted(:)');
-    p_sorted = round(p_sorted(:)');
-    
-    xticks_new = unique([ax.XTick(end), z_sorted, p_sorted]);
-    xticks(xticks_new);
-    
-    drawnow;   % ensure labels are created
-    
-    % ---- 2. Modify ONLY the last label ----
-    ticks  = ax.XTick;
-    labels = ax.XTickLabel;
-    
-    n = round(log10(ticks(end)));
-    labels{end} = sprintf('10^{%d}', n);
-    
-    ax.XTickLabel = labels;
-    ax.TickLabelInterpreter = 'tex';
+    % ax = gca;
+    % 
+    % % ---- 1. Set numeric ticks FIRST ----
+    % z_sorted = round(z_sorted(:)');
+    % p_sorted = round(p_sorted(:)');
+    % 
+    % xticks_new = unique([ax.XTick(end), z_sorted, p_sorted]);
+    % xticks(xticks_new);
+    % 
+    % drawnow;   % ensure labels are created
+    % 
+    % % ---- 2. Modify ONLY the last label ----
+    % ticks  = ax.XTick;
+    % labels = ax.XTickLabel;
+    % 
+    % n = round(log10(ticks(end)));
+    % labels{end} = sprintf('10^{%d}', n);
+    % 
+    % ax.XTickLabel = labels;
+    % ax.TickLabelInterpreter = 'tex';
     
     % Create numeric labels with no decimals
     % xticklabels(arrayfun(@(x) num2str(x, '%.0f'), labels, 'UniformOutput', false));

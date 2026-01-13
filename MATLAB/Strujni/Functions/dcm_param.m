@@ -14,11 +14,12 @@ function dcm = dcm_param(boost, Bat, pv, Ir0)
     Ipv0 = Ir0;
     [~, idx] = min(abs(pv.Ipv - Ipv0));
     Upv0 = pv.Upv(idx);
-    Ubat0 = Ubat_charged;
+    Ubat0 = Ubat_nom;
 
+    Ubatmax = Ubat_charged;
     Upvmin = 0.77*pv.Uoc;
     % Upvmin = Upv0;
-    m0 = (Ubat0 - 2*Upvmin)/(2*L);
+    m0 = (Ubatmax - 2*Upvmin)/(2*L);
 
     ro = L/T*(Ubat0*Upv0*Ir0)/((Ubat0-Upv0)*(Upv0+m0*L)^2);
     D0 = L/T*(Ir0)/(Upv0+m0*L);

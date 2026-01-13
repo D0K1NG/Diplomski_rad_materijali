@@ -19,16 +19,14 @@ function [sys_tf_ccm, sys_dcm] = sys_dcm(dcm_sys, dcm_op, boost)
     % Measurement low pass filter:
     Gmf = tf(1, [Tmfc, 1]);
 
-    Tp1 = T;
     K = K1+ro*Ku*K2;
     Tz = (K1*Tu)/(K);
 
-    Gp = tf([K*Tz, K], [Tp1*Tu, (Tp1+Tu), 1]);
+    Gp = tf([K*Tz, K], [Tn*Tu, (Tn+Tu), 1]);
     sys_tf_ccm = Gp * Gmf;
-    % sys_tf_ccm = Gp;
 
-    sys_dcm.Tp1 = Tp1;
-    sys_dcm.Tp2 = Tu;
+    sys_dcm.Tp1 = Tu;
+    sys_dcm.Tp2 = Tn;
     sys_dcm.Tp3 = Tmfc;
     sys_dcm.K = K;
     sys_dcm.Tz = Tz;
