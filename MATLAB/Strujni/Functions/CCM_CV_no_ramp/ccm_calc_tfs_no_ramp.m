@@ -1,4 +1,4 @@
-function [ccm_sys, ccm_separate_tfs] = ccm_calc_tfs(boost, op)
+function [ccm_sys, ccm_separate_tfs] = ccm_calc_tfs_no_ramp(boost, op)
 % boost     -> boost converter system parameters
 % op        -> steaday state operating point parameters
 

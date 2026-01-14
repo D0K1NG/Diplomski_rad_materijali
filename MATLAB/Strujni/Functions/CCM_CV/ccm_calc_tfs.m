@@ -1,4 +1,4 @@
-function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
+function [ccm_sys, ccm_separate_tfs] = ccm_calc_tfs(boost, op)
 % boost     -> boost converter system parameters
 % op        -> steaday state operating point parameters
 
@@ -45,16 +45,16 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
     k23 = Rt*Ru*k1*k6-Rt*Ru*k2*k5;
     % Upv:
     k24 = Rt*Ru*k7;
-    k25 = Rt*Ru*k3*k6-R
+    k25 = Rt*Ru*k3*k6-Rt*Ru*k2*k7;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cbat -> inf %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % System characteristics:
-    Tn = sqrt(k27/k29);
-    zeta = 1/2*k28/(sqrt(k29*k27));
-    Tz1 = -k30/k31;
-    Tz2 = k32/k33;
-    K1 = k31/k29;
-    K2 = k33/k29;
+    Tn = sqrt(k19/k21);
+    zeta = 1/2*(k20/(sqrt(k19*k21)));
+    Tz1 = k22/k23;
+    Tz2 = k24/k25;
+    K1 = k23/k21;
+    K2 = k25/k21;
     Tp1 = Tn/(zeta-sqrt(zeta^2-1));
     Tp2 = Tn/(zeta+sqrt(zeta^2-1));
 
@@ -64,38 +64,36 @@ function [ccm_m_sys, ccm_m_separate_tfs] = ccm_m_calc_tfs(boost, op)
 
     % system tf's with infinite Cbat:
     % 2. order:
-    G_Ubat_Ir = tf([-K1*Tz1, K1], [(Tp1*Tp2), (Tp1+Tp2), 1]);
+    G_Ubat_Ir = tf([K1*Tz1, K1], [(Tp1*Tp2), (Tp1+Tp2), 1]);
     G_Ubat_Upv = tf([K2*Tz2, K2], [(Tp1*Tp2), (Tp1+Tp2), 1]);
-    % without a zero:
-    G_Ubat_Ir_nozero = tf(K1, [(Tp1*Tp2), (Tp1+Tp2), 1]);
-    G_Ubat_Upv_nozero = tf(K2, [(Tp1*Tp2), (Tp1+Tp2), 1]);
-    % 1. order without a zero:
+    % 1. order with zero:
     G_Ubat_Ir_red = tf(K1, [Tp1, 1]);
     G_Ubat_Upv_red = tf(K2, [Tp1, 1]);
 
     % input capacitor tf:
+    
     G_Upv_IL = tf(-1, [Cu, Ipv0/Upv0]);
 
-    ccm_m_separate_tfs.G_Ubat_Ir_full = G_Ubat_Ir_full;
-    ccm_m_separate_tfs.G_Ubat_Upv_full = G_Ubat_Upv_full;
+    ccm_separate_tfs.G_Ubat_Ir_full = G_Ubat_Ir_full;
+    ccm_separate_tfs.G_Ubat_Upv_full = G_Ubat_Upv_full;
 
-    ccm_m_separate_tfs.G_Ubat_Ir = G_Ubat_Ir;
-    ccm_m_separate_tfs.G_Ubat_Upv = G_Ubat_Upv;
-    ccm_m_separate_tfs.G_Ubat_Ir_nozero = G_Ubat_Ir_nozero;
-    ccm_m_separate_tfs.G_Ubat_Upv_nozero = G_Ubat_Upv_nozero;
-    ccm_m_separate_tfs.G_Ubat_Ir_red = G_Ubat_Ir_red;
-    ccm_m_separate_tfs.G_Ubat_Upv_red = G_Ubat_Upv_red;
+    ccm_separate_tfs.G_Ubat_Ir = G_Ubat_Ir;
+    ccm_separate_tfs.G_Ubat_Upv = G_Ubat_Upv;
+
+    ccm_separate_tfs.G_Ubat_Ir_red = G_Ubat_Ir_red;
+    ccm_separate_tfs.G_Ubat_Upv_red = G_Ubat_Upv_red;
+
+    ccm_separate_tfs.G_Upv_IL = G_Upv_IL;
     
-    ccm_m_separate_tfs.G_Upv_IL = G_Upv_IL;
+   % Full system transfer function:
+    ccm_sys.sys = G_Ubat_Ir_red + ro * G_Upv_IL * G_Ubat_Upv_red;
 
-    ccm_m_sys.G_PT1 = G_Ubat_Ir_red + ro*G_Upv_IL*G_Ubat_Upv_red;
-
-    ccm_m_sys.Tn = Tn;
-    ccm_m_sys.zeta = zeta;
-    ccm_m_sys.Tz1 = Tz1;
-    ccm_m_sys.Tz2 = Tz2;
-    ccm_m_sys.K1 = K1;
-    ccm_m_sys.K2 = K2;
-    ccm_m_sys.Tp1 = Tp1;
-    ccm_m_sys.Tp2 = Tp2;
+    ccm_sys.Tn = Tn;
+    ccm_sys.zeta = zeta;
+    ccm_sys.Tz1 = Tz1;
+    ccm_sys.Tz2 = Tz2;
+    ccm_sys.K1 = K1;
+    ccm_sys.K2 = K2;
+    ccm_sys.Tp1 = Tp1;
+    ccm_sys.Tp2 = Tp2;
 end

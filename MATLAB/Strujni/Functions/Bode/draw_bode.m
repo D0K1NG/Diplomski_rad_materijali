@@ -1,4 +1,4 @@
-function draw_bode(tf, w)
+function fig = draw_bode(tf, w)
 %   Inputs:
 %       tf - system transfer function
 %       w  - vector of frequencies (rad/s)
@@ -38,6 +38,12 @@ function draw_bode(tf, w)
     mag_dB = 20*log10(K) + mag_total;
     phase_deg = phase_total;
     
+    % for 11 x 9 (W x H)
+    width_px = round(11/2.54 * 300); % ~1335 pixels
+    height_px = round(9/2.54 * 300); % ~1146 pixels
+
+    fig = figure('Units','pixels', 'Position', [100 100 width_px height_px]); % W x H
+
     t = tiledlayout(2, 1);
     t.TileSpacing = 'compact';
     t.Padding = 'compact';
@@ -46,17 +52,32 @@ function draw_bode(tf, w)
     semilogx(w, mag_dB, '-k','LineWidth', 1.5);
     hold on
     
-    % target = 2000*2*pi;
-    % tol = 1e-6 * target;   % relative tolerance
+    yline(0, '-k', ...
+    'LabelHorizontalAlignment', 'center', ...
+    'LabelVerticalAlignment', 'bottom', ...
+    'LineWidth', 1.2);
+
+    % % Pronađi presječnu frekvenciju (amplituda ≈ 0 dB)
+    % [~, idx_cross] = min(abs(mag_dB));  % indeks gdje je magnituda najbliža 0 dB
+    % wc = w(idx_cross);                 % pripadna frekvencija (rad/s)
+    % PM = phase_deg(idx_cross);
+    % 
+    % % Crtaj vertikalnu liniju na toj frekvenciji
+    % xline(wc, '--k', sprintf('\\omega_c'), ...
+    % 'LabelOrientation', 'horizontal', ...
+    % 'LabelHorizontalAlignment', 'right', ...
+    % 'FontSize', 12, ...
+    % 'LineWidth', 1.2);
 
     k = 0;
     % Mark poles on magnitude plot:
     for i = 1:length(p_sorted)
         if p_sorted(i) > 0
             k = k + 1;
-            xline(p_sorted(i),'--k',sprintf('wp_%d',k), ...
+            xline(p_sorted(i),'--k',sprintf('\\omega_{p%d}',k), ...
                 'LabelOrientation','horizontal', ...
                 'LabelHorizontalAlignment','right', ...
+                'FontSize', 12, ...
                 'LineWidth',1.2);
         end
     end
@@ -66,46 +87,29 @@ function draw_bode(tf, w)
     for i = 1:length(z_sorted)
         if z_sorted(i) > 0
             k = k + 1;
-            xline(z_sorted(i),'--k',sprintf('wz_%d',k), ...
+            xline(z_sorted(i),'--k',sprintf('\\omega_{z%d}',k), ...
                 'LabelOrientation','horizontal', ...
-                'LabelHorizontalAlignment','right', ...
+                'LabelHorizontalAlignment','left', ...
+                'FontSize', 12, ...
                 'LineWidth',1.2);
         end
     end
     
     grid on;
-    ylabel('Magnitude (dB)');
+    ylabel('\it{Amplituda (dB)}');
     set(gca, 'FontSize', 11);
-
-    % ax = gca;
-    % 
-    % % ---- 1. Set numeric ticks FIRST ----
-    % z_sorted = round(z_sorted(:)');
-    % p_sorted = round(p_sorted(:)');
-    % 
-    % xticks_new = unique([ax.XTick(end), z_sorted, p_sorted]);
-    % xticks(xticks_new);
-    % 
-    % drawnow;   % ensure labels are created
-    % 
-    % % ---- 2. Modify ONLY the last label ----
-    % ticks  = ax.XTick;
-    % labels = ax.XTickLabel;
-    % 
-    % n = round(log10(ticks(end)));
-    % labels{end} = sprintf('10^{%d}', n);
-    % 
-    % ax.XTickLabel = labels;
-    % ax.TickLabelInterpreter = 'tex';
-    
-    % Create numeric labels with no decimals
-    % xticklabels(arrayfun(@(x) num2str(x, '%.0f'), labels, 'UniformOutput', false));
     
     nexttile
     semilogx(w, phase_deg, '-k', 'LineWidth', 1.5);
+    hold on;
+    % yline(PM, '-k', sprintf('\\gamma_s = %d^\\circ', round(180 + PM)), ...
+    % 'LabelHorizontalAlignment', 'right', ...
+    % 'LabelVerticalAlignment', 'bottom', ...
+    % 'FontSize', 14, ...
+    % 'LineWidth', 1.2);
     grid on;
-    xlabel('Frequency (rad/s)');
-    ylabel('Phase (degrees)');
+    xlabel('\it{Frekvencija (rad/s)}');
+    ylabel('\it{Faza (^\circ)}');
     set(gca, 'FontSize', 11);
 
 end

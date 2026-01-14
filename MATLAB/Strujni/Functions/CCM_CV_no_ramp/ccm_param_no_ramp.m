@@ -1,4 +1,4 @@
-function ccm = ccm_param(boost, Bat, pv_data)
+function ccm = ccm_param_no_ramp(boost, Bat, pv_data)
 % calculate steady state param. for CCM mode
 
     arguments
