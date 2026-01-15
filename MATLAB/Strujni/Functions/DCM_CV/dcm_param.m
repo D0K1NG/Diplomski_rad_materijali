@@ -14,7 +14,7 @@ function dcm = dcm_param(boost, Bat, pv, Ir0)
     Ipv0 = Ir0;
     [~, idx] = min(abs(pv.Ipv - Ipv0));
     Upv0 = pv.Upv(idx);
-    Ubat0 = Ubat_nom;
+    Ubat0 = Ubat_charged - 0.6;
 
     Ubatmax = Ubat_charged;
     Upvmin = 0.77*pv.Uoc;
