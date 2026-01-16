@@ -1,14 +1,14 @@
-function [ccm_sys, ccm_separate_tfs] = ccm_calc_tfs(boost, op)
-% boost     -> boost converter system parameters
-% op        -> steaday state operating point parameters
+function [constants, separate_tfs] = ccm_tfs_CV(boost, ccm_op_CV)
+% boost            -> boost converter system parameters
+% ccm_op_CV        -> steaday state operating point parameters
 
     arguments
         boost struct
-        op struct
+        ccm_op_CV struct
     end
 
     unpackStruct(boost);
-    unpackStruct(op);
+    unpackStruct(ccm_op_CV);
 
     % Im:
     k1 = 1/T*(Ubat0)/(Upv0+m0*L);
@@ -70,30 +70,22 @@ function [ccm_sys, ccm_separate_tfs] = ccm_calc_tfs(boost, op)
     G_Ubat_Ir_red = tf(K1, [Tp1, 1]);
     G_Ubat_Upv_red = tf(K2, [Tp1, 1]);
 
-    % input capacitor tf:
-    
-    G_Upv_IL = tf(-1, [Cu, Ipv0/Upv0]);
 
-    ccm_separate_tfs.G_Ubat_Ir_full = G_Ubat_Ir_full;
-    ccm_separate_tfs.G_Ubat_Upv_full = G_Ubat_Upv_full;
+    separate_tfs.G_Ubat_Ir_full = G_Ubat_Ir_full;
+    separate_tfs.G_Ubat_Upv_full = G_Ubat_Upv_full;
 
-    ccm_separate_tfs.G_Ubat_Ir = G_Ubat_Ir;
-    ccm_separate_tfs.G_Ubat_Upv = G_Ubat_Upv;
+    separate_tfs.G_Ubat_Ir = G_Ubat_Ir;
+    separate_tfs.G_Ubat_Upv = G_Ubat_Upv;
 
-    ccm_separate_tfs.G_Ubat_Ir_red = G_Ubat_Ir_red;
-    ccm_separate_tfs.G_Ubat_Upv_red = G_Ubat_Upv_red;
+    separate_tfs.G_Ubat_Ir_red = G_Ubat_Ir_red;
+    separate_tfs.G_Ubat_Upv_red = G_Ubat_Upv_red;
 
-    ccm_separate_tfs.G_Upv_IL = G_Upv_IL;
-    
-   % Full system transfer function:
-    ccm_sys.sys = G_Ubat_Ir_red + ro * G_Upv_IL * G_Ubat_Upv_red;
-
-    ccm_sys.Tn = Tn;
-    ccm_sys.zeta = zeta;
-    ccm_sys.Tz1 = Tz1;
-    ccm_sys.Tz2 = Tz2;
-    ccm_sys.K1 = K1;
-    ccm_sys.K2 = K2;
-    ccm_sys.Tp1 = Tp1;
-    ccm_sys.Tp2 = Tp2;
+    constants.Tn = Tn;
+    constants.zeta = zeta;
+    constants.Tz1 = Tz1;
+    constants.Tz2 = Tz2;
+    constants.K1 = K1;
+    constants.K2 = K2;
+    constants.Tp1 = Tp1;
+    constants.Tp2 = Tp2;
 end

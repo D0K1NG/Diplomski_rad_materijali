@@ -1,5 +1,5 @@
-function ccm = ccm_param(boost, Bat, pv, Ir0)
-% calculate steady state param. for CCM mode with compensation ramp
+function op = ccm_op_CV(boost, Bat, pv, Ir0)
+% calculate steady state param. for CCM CV mode with compensation ramp
 
     arguments
         boost struct
@@ -18,7 +18,6 @@ function ccm = ccm_param(boost, Bat, pv, Ir0)
     
     Ubatmax = Ubat_charged;
     Upvmin = 0.77*pv.Uoc;
-    % Upvmin = Upv0;
     m0 = (Ubatmax - 2*Upvmin)/(2*L);
 
     Im0 = Ir0-T/L*(Upv0+m0*L)/Ubat0*(Ubat0-Upv0);
@@ -34,16 +33,16 @@ function ccm = ccm_param(boost, Bat, pv, Ir0)
     % Limit CCM -> DCM:
     Ir_lim = T/L*((Upv0+m0*L)*(Ubat0-Upv0))/(Ubat0);
   
-    ccm.Ipv0 = Ipv0;
-    ccm.Upv0 = Upv0;
-    ccm.Ubat0 = Ubat0;
-    ccm.m0 = m0;
-    ccm.Ir0 = Ir0;
-    ccm.Im0 = Im0;
-    ccm.Lmin = Lmin;
-    ccm.ro = ro;
-    ccm.L_lim = L_lim;
-    ccm.G_incr_pv = G_incr_pv;
-    ccm.D0 = D0;
-    ccm.Ir_lim = Ir_lim;
+    op.Ipv0 = Ipv0;
+    op.Upv0 = Upv0;
+    op.Ubat0 = Ubat0;
+    op.m0 = m0;
+    op.Ir0 = Ir0;
+    op.Im0 = Im0;
+    op.Lmin = Lmin;
+    op.ro = ro;
+    op.L_lim = L_lim;
+    op.G_incr_pv = G_incr_pv;
+    op.D0 = D0;
+    op.Ir_lim = Ir_lim;
 end

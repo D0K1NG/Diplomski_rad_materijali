@@ -1,14 +1,14 @@
-function [dcm_sys, dcm_separate_tfs] = dcm_calc_tfs(boost, op)
-% boost     -> boost converter system parameters
-% op        -> steaday state operating point parameters
+function [constants, separate_tfs] = dcm_tfs_CV(boost, dcm_op_CV)
+% boost            -> boost converter system parameters
+% dcm_op_CV        -> steaday state operating point parameters
 
     arguments
         boost struct
-        op struct
+        dcm_op_CV struct
     end
 
     unpackStruct(boost);
-    unpackStruct(op);
+    unpackStruct(dcm_op_CV);
 
     % ID1:
     k1 = L/T*(Upv0^2*Ir0)/((Ubat0-Upv0)*(Upv0+m0*L)^2);
@@ -45,19 +45,13 @@ function [dcm_sys, dcm_separate_tfs] = dcm_calc_tfs(boost, op)
     G_Ubat_Ir = tf(K1, [Tn, 1]);
     G_Ubat_Upv = tf(K2, [Tn, 1]);
 
-    % input capacitor tf:
-    G_Upv_IL = tf(-1, [Cu, Ipv0/Upv0]);
+    separate_tfs.G_Ubat_Ir_full = G_Ubat_Ir_full;
+    separate_tfs.G_Ubat_Upv_full = G_Ubat_Upv_full;
 
-    dcm_separate_tfs.G_Ubat_Ir_full = G_Ubat_Ir_full;
-    dcm_separate_tfs.G_Ubat_Upv_full = G_Ubat_Upv_full;
+    separate_tfs.G_Ubat_Ir = G_Ubat_Ir;
+    separate_tfs.G_Ubat_Upv = G_Ubat_Upv;
 
-    dcm_separate_tfs.G_Ubat_Ir = G_Ubat_Ir;
-    dcm_separate_tfs.G_Ubat_Upv = G_Ubat_Upv;
-
-    dcm_separate_tfs.G_Upv_IL = G_Upv_IL;
-
-    dcm_sys.G_PT1 = G_Ubat_Ir + ro*G_Upv_IL*G_Ubat_Upv;
-    dcm_sys.K1 = K1;
-    dcm_sys.K2 = K2;
-    dcm_sys.Tn = Tn;
+    constants.K1 = K1;
+    constants.K2 = K2;
+    constants.Tn = Tn;
 end
