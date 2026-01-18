@@ -1,20 +1,20 @@
-function op = ccm_op_CV(boost, Bat, pv, Ir0)
+function op = ccm_op_CV(boost, Bat, pv)
 % calculate steady state param. for CCM CV mode with compensation ramp
 
     arguments
         boost struct
         Bat struct
         pv struct
-        Ir0 (1,1) double
     end
 
     unpackStruct(boost);
     unpackStruct(Bat);
     
-    Ipv0 = Ir0;
-    [~, idx] = min(abs(pv.Ipv - Ipv0));
-    Upv0 = pv.Upv(idx);
-    Ubat0 = Ubat_nom;
+    Upv0 = pv.Umpp;
+    [~, idx] = min(abs(pv.Upv - Upv0));
+    Ipv0 = pv.Ipv(idx);
+    Ir0 = Ipv0;
+    Ubat0 = 0.97*Ubat_charged;
     
     Ubatmax = Ubat_charged;
     Upvmin = 0.77*pv.Uoc;
@@ -32,6 +32,9 @@ function op = ccm_op_CV(boost, Bat, pv, Ir0)
 
     % Limit CCM -> DCM:
     Ir_lim = T/L*((Upv0+m0*L)*(Ubat0-Upv0))/(Ubat0);
+
+
+    E0 = Ebat_min + (Ubat0 - Ubat_cut_off)*1/nagib;
   
     op.Ipv0 = Ipv0;
     op.Upv0 = Upv0;
@@ -45,4 +48,5 @@ function op = ccm_op_CV(boost, Bat, pv, Ir0)
     op.G_incr_pv = G_incr_pv;
     op.D0 = D0;
     op.Ir_lim = Ir_lim;
+    op.E0 = E0;
 end
