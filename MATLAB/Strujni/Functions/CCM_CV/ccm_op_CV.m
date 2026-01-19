@@ -14,7 +14,7 @@ function op = ccm_op_CV(boost, Bat, pv)
     [~, idx] = min(abs(pv.Upv - Upv0));
     Ipv0 = pv.Ipv(idx);
     Ir0 = Ipv0;
-    Ubat0 = 0.97*Ubat_charged;
+    Ubat0 = 12.4;
     
     Ubatmax = Ubat_charged;
     Upvmin = 0.77*pv.Uoc;

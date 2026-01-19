@@ -18,5 +18,5 @@ function [sys_tf, sys_constants] = dcm_sys_MPP(dcm_op_mpp, boost)
     sys_tf = ro * Gu;
 
     sys_constants.Tn = Tu;
-    sys_constants.K = Ku;
+    sys_constants.K = ro * Ku;
 end
