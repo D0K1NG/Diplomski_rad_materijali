@@ -38,12 +38,3 @@ else
     end
 end
 
-% Logging data:
-% persistent log_data;
-% if isempty(log_data):
-%     log_data = zeros(100, 5);
-% else
-%     log_data = [log_data(2:, :), Upv_1, Upv_2, deltaU, deltaI, Upv_ref];
-% end
-% log_data = [Upv_1, Upv_2, incr, Upv_ref];
-
