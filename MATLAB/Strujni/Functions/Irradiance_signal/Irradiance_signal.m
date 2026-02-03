@@ -18,14 +18,15 @@ G_levels(1) = Gmin;
 G_levels(end - 1) = Gmax;
 
 % stepenasti signal (drži prethodnu vrijednost)
-G = interp1(t_change, G_levels, t, 'previous', 'extrap');
+% G = interp1(t_change, G_levels, t, 'previous', 'extrap');
+G = interp1(t_change, G_levels, t, 'pchip', 'extrap');
 
 % (po želji) clamp, iako je već u rasponu
 G = max(Gmin, min(Gmax, G));
 
 
 % LOW-PASS FILTER (uglađivanje)
-tau = 0.003;                 % 50 ms vremenska konstanta
+tau = 0.03;                 % 50 ms vremenska konstanta
 alpha = Ts/(tau + Ts);     % diskretni koeficijent
 
 Gf = zeros(size(G));

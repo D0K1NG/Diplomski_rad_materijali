@@ -1,0 +1,30 @@
+function Gf = irradiance_signal_real(Tend, Tstep, Gmin, Gmax)
+
+t  = (0:Tstep:Tend)'; % vremenski vektor
+tau   = 0.2;    % korelacijsko vrijeme [s]
+sigma = 200;    % varijacija ozračenja
+
+Gf = zeros(size(t));
+Gf(1) = Gmin + (Gmax-Gmin)/2;
+
+for k = 2:numel(t)
+    dW = sqrt(Tstep)*randn;
+    Gf(k) = Gf(k-1) + (-(Gf(k-1) - Gf(1))/tau)*Tstep + sigma*dW;
+end
+
+Gf = max(Gmin, min(Gmax, Gf));
+
+% LOW-PASS FILTER (uglađivanje)
+tau = 0.03;                 % 50 ms vremenska konstanta
+alpha = Tstep/(tau + Tstep);     % diskretni koeficijent
+Gf_filtered = zeros(size(Gf));
+Gf_filtered(1) = Gf(1);
+
+for k = 2:numel(Gf)
+    Gf_filtered(k) = Gf_filtered(k-1) + alpha*(Gf(k) - Gf_filtered(k-1));
+end
+
+Gf = timeseries(Gf_filtered, t);
+
+end
+
