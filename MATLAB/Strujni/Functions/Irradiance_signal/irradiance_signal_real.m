@@ -1,8 +1,11 @@
 function Gf = irradiance_signal_real(Tend, Tstep, Gmin, Gmax)
 
 t  = (0:Tstep:Tend)'; % vremenski vektor
-tau   = 0.2;    % korelacijsko vrijeme [s]
-sigma = 200;    % varijacija ozračenja
+% tau   = 0.2;    % korelacijsko vrijeme [s]
+% sigma = 200;    % varijacija ozračenja
+
+tau   = Tend/30;
+sigma = 0.25*(Gmax-Gmin)*sqrt(2/tau);
 
 Gf = zeros(size(t));
 Gf(1) = Gmin + (Gmax-Gmin)/2;
