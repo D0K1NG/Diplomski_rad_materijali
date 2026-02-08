@@ -1,0 +1,42 @@
+function pv = calc_pv_res(model, params)
+% model     -> simulink model name
+% params    -> struct containing model parameters 
+%              (irradiance, temperature, ramp slope)
+
+    arguments
+        model (1,1) string
+        params struct
+    end
+    
+    simIn = Simulink.SimulationInput(model);
+    paramNames = fieldnames(params);
+
+    % inject variables into simulink:
+    for i = 1:numel(paramNames)
+        simIn = simIn.setVariable(paramNames{i}, params.(paramNames{i}));
+    end
+
+    SimOut = sim(simIn);
+    Rpv = SimOut.get("Rpv_sim").Data;
+    Upv = SimOut.get("Upv_sim").Data;
+    Ipv = SimOut.get("Ipv_sim").Data;
+    
+    Rpv(isinf(Rpv)) = 1000;
+    Ppv = Upv .* Ipv;
+    [Pmax, idx] = max(Ppv);
+    Umax = Upv(idx);
+    Imax = Ipv(idx);
+
+    pv.Rpv = Rpv;
+    pv.Ppv = Ppv;
+    pv.Upv = Upv;
+    pv.Ipv = Ipv;
+
+    pv.Pmpp = Pmax;
+    pv.Umpp = Umax;
+    pv.Impp = Imax;
+
+    pv.Isc = Ipv(1);
+    pv.Uoc = Upv(end);
+end
+
