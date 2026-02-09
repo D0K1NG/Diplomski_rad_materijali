@@ -1,0 +1,68 @@
+function Upvref = mppt_my3(Upv1, Upv2, Ipv1, Ipv2)
+% Parametri
+dU_small     = 0.01;     % sigurni inkrement
+zero_thresh  = 1e-4;     % ~ 0
+epsilon      = 1e-3;     % osjetljivost
+k_step       = 20;       % step gain: V per (W/V)
+step_min     = 0.01;     % minimalni inkrement
+step_max     = 0.2;      % maksimalni inkrement
+Umin         = 4.0;      % minimalni referentni napon
+Umax         = 6.2;      % maksimalni referentni napon[V] upper clamp
+I_dark       = 1e-3;     % [A] "no irradiance" threshold
+
+Upvref = Upv2;
+
+% Postavljanje granica na referentni napon
+if Upvref < Umin
+    Upvref = Umin;
+elseif Upvref > Umax
+    Upvref = Umax;
+end
+
+% Izvor je u praznom hodu i potrebno je smanjiti napon
+if (Ipv1 <= zero_thresh) && (Ipv2 <= zero_thresh)
+    Upvref = max(Umin, 0.9 * Upv2);
+    return;
+end
+
+dUpv = Upv1 - Upv2;
+dIpv = Ipv1 - Ipv2;
+
+% Mali pomak ako nije zabiljezena promjena
+if (abs(dUpv) < zero_thresh) && (abs(dIpv) < zero_thresh)
+    Upvref = clamp(Upv2 + step_min, Umin, Umax);
+    return;
+end
+
+% dP/dU = I + U * dI/dU
+if abs(dUpv) > dU_small
+    dIdU = dIpv / dUpv;
+    dPdU = Ipv1 + Upv1 * dIdU;
+else
+    dPdU = (Ipv1 - Ipv2);
+end
+
+% 
+if abs(dPdU) > epsilon
+    step_var = min(step_max, k_step * abs(dPdU));
+    Upvref   = Upv2 + sign(dPdU) * step_var;
+else
+    % Near MPP: keep a tiny perturb so it doesn't stall
+    % Use the last voltage direction if available; otherwise push up
+    dir = 1;
+    if abs(dUpv) > zero_thresh
+        dir = sign(dUpv);
+        if dir == 0, dir = 1; end
+    end
+    Upvref = Upv2 + dir * step_min;
+end
+
+% ---- Final clamp + output ----
+Upvref = clamp(Upvref, Umin, Umax);
+
+end
+
+function y = clamp(x, lower, higher)
+y = min(higher, max(lower, x));
+end
+
