@@ -8,7 +8,7 @@ step_min     = 0.01;     % minimalni pomak
 step_max     = 0.2;      % maksimalni pomak
 Umin         = 4.0;      % minimalni referentni napon
 Umax         = 6.2;      % maksimalni referentni napon
-I_dark       = 1e-3;     % [A] "no irradiance" threshold
+I_dark       = 1e-3;     % struja zatamnjenja
 
 Upvref = Upv2;
 
@@ -20,7 +20,7 @@ elseif Upvref > Umax
 end
 
 % Izvor je u praznom hodu i potrebno je smanjiti napon
-if (Ipv1 <= zero_thresh) && (Ipv2 <= zero_thresh)
+if (Ipv1 <= I_dark) && (Ipv2 <= I_dark)
     Upvref = max(Umin, 0.9 * Upv2);
     return;
 end
@@ -28,7 +28,7 @@ end
 dUpv = Upv1 - Upv2;
 dIpv = Ipv1 - Ipv2;
 
-% Mali pomak ako nije zabiljezena promjena
+% Mali pomak ako nije zabilježena promjena
 if (abs(dUpv) < zero_thresh) && (abs(dIpv) < zero_thresh)
     Upvref = clamp(Upv2 + step_min, Umin, Umax);
     return;
@@ -43,7 +43,7 @@ else
 end
 
 if abs(dPdU) > epsilon
-    % varijabilni ikrement
+    % varijabilni inkrement
     step_var = min(step_max, k_step * abs(dPdU));
     Upvref   = Upv2 + sign(dPdU) * step_var;
 else
@@ -56,7 +56,7 @@ else
     Upvref = Upv2 + dir * step_min;
 end
 
-% Konacno osiguranje
+% Konačno osiguranje
 Upvref = clamp(Upvref, Umin, Umax);
 
 end
